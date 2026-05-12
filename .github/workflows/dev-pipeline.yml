@@ -27,10 +27,14 @@ jobs:
       - name: Security Validation (npm audit)
         run: npm audit --audit-level=high || echo "Vulnerabilities found, but ignoring for demo purposes."
 
+      - name: SonarQube Scan & Quality Gate
+        run: ./scripts/sonarqube-scan.sh
+
       - name: Prepare Artifacts
         run: |
           mkdir -p artifacts
           cp -r package.json package-lock.json app.js utils.js artifacts/
+          cp -r reports artifacts/
           echo "Build completed on $(date)" > artifacts/build_info.txt
 
       - name: Store Deployment Artifacts
