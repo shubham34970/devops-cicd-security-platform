@@ -30,6 +30,19 @@ jobs:
       - name: SonarQube Scan & Quality Gate
         run: ./scripts/sonarqube-scan.sh
 
+      - name: OPA Policy Validation (Conftest)
+        run: |
+          echo "Installing Conftest..."
+          wget https://github.com/open-policy-agent/conftest/releases/download/v0.45.0/conftest_0.45.0_Linux_x86_64.tar.gz
+          tar xzf conftest_0.45.0_Linux_x86_64.tar.gz
+          sudo mv conftest /usr/local/bin
+          
+          mkdir -p reports
+          echo "Validating k8s/deployment.yaml against policies..."
+          # Note: We run conftest to output JSON for reports. If it fails, the pipeline fails.
+          conftest test k8s/deployment.yaml -p policies/ -o json > reports/opa-report.json || { echo "OPA Policy Validation Failed!"; exit 1; }
+          echo "OPA Policy Validation Passed!"
+
       - name: Prepare Artifacts
         run: |
           mkdir -p artifacts
