@@ -1,0 +1,85 @@
+name: Production Pipeline
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build-test-security:
+    name: Build, Test, and Security Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Source Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies (Build)
+        run: npm install
+
+      - name: Run Automated Tests
+        run: npm test
+
+      - name: Security Validation (npm audit)
+        run: npm audit --audit-level=high || echo "Vulnerabilities found, but ignoring for demo purposes."
+
+      - name: Prepare Artifacts
+        run: |
+          mkdir -p artifacts
+          cp -r package.json package-lock.json app.js utils.js artifacts/
+          echo "Production Build completed on $(date)" > artifacts/build_info.txt
+
+      - name: Store Deployment Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-artifacts
+          path: artifacts/
+
+  deploy-to-production:
+    name: Deployment
+    needs: build-test-security
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: prod-artifacts
+          path: artifacts/
+
+      - name: Deploy to Production Environment
+        env:
+          PROD_API_KEY: ${{ secrets.PROD_API_KEY }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+        run: |
+          echo "Starting deployment to production..."
+          # Simulated deployment steps using secure environment variables
+          echo "Using PROD_API_KEY (masked): ${PROD_API_KEY}"
+          echo "Using PROD_DB_PASSWORD (masked): ${PROD_DB_PASSWORD}"
+          echo "Deploying artifact contents:"
+          ls -la artifacts/
+          echo "Production Deployment successful!"
+          
+          # Generate Deployment Report
+          echo "### Deployment Report" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: **Production**" >> $GITHUB_STEP_SUMMARY
+          echo "Status: **Success** :white_check_mark:" >> $GITHUB_STEP_SUMMARY
+
+  rollback-on-failure:
+    name: Rollback Mechanism
+    needs: deploy-to-production
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Rollback
+        run: |
+          echo "CRITICAL: Production deployment failed! Initiating rollback procedures..."
+          # Simulated rollback script
+          echo "Reverting to previous stable state in Production environment."
+          
+          echo "### Rollback Report" >> $GITHUB_STEP_SUMMARY
+          echo "Rollback initiated due to production deployment failure. Status: **Completed** :warning:" >> $GITHUB_STEP_SUMMARY

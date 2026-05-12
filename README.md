@@ -1,5 +1,8 @@
 # devops-cicd-security-platform
 
+[![Development Pipeline](https://github.com/shubham34970/devops-cicd-security-platform/actions/workflows/dev-pipeline.yml/badge.svg)](https://github.com/shubham34970/devops-cicd-security-platform/actions/workflows/dev-pipeline.yml)
+[![Production Pipeline](https://github.com/shubham34970/devops-cicd-security-platform/actions/workflows/prod-pipeline.yml/badge.svg)](https://github.com/shubham34970/devops-cicd-security-platform/actions/workflows/prod-pipeline.yml)
+
 ## Branching Strategy
 
 This repository follows a structured branching strategy to manage features, releases, and environments safely:
