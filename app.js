@@ -3,7 +3,7 @@ const app = express();
 const port = 3000;
 
 app.get('/api/demo', (req, res) => {
-  res.json({ message: 'Hello from the Demo API! (Rebased)' });
+  res.json({ message: 'Hello from the Demo API! (Rebased + Feature A)' });
 });
 
 app.get('/api/stash-demo', (req, res) => {
