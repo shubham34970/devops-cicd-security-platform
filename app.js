@@ -6,6 +6,10 @@ app.get('/api/demo', (req, res) => {
   res.json({ message: 'Hello from Feature A and Feature B!' });
 });
 
+app.get('/api/stash-demo', (req, res) => {
+  res.json({ message: 'Stash demo endpoint!' });
+});
+
 app.listen(port, () => {
   console.log(`Demo API listening on port ${port}`);
 });
